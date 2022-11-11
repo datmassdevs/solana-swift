@@ -154,6 +154,15 @@ public struct Transaction: Encodable, Equatable {
         return message
     }
 
+    static func sortAccountMetas(accountMetas: [Account.Meta]) -> [Account.Meta] {
+        let locale = Locale(identifier: "en_US")
+        return accountMetas.sorted { (x, y) -> Bool in
+            if x.isSigner != y.isSigner {return x.isSigner}
+            if x.isWritable != y.isWritable {return x.isWritable}
+            return x.publicKey.base58EncodedString.compare(y.publicKey.base58EncodedString, locale: locale) == .orderedAscending
+        }
+    }
+
     public func compileMessage() throws -> Message {
         // verify instructions
         guard !instructions.isEmpty else {
@@ -184,12 +193,7 @@ public struct Transaction: Encodable, Equatable {
             )
         }
 
-        // sort accountMetas, first by signer, then by writable
-        accountMetas.sort { x, y -> Bool in
-            if x.isSigner != y.isSigner { return x.isSigner }
-            if x.isWritable != y.isWritable { return x.isWritable }
-            return false
-        }
+        accountMetas = Transaction.sortAccountMetas(accountMetas: accountMetas)
 
         // filterOut duplicate account metas, keeps writable one
         accountMetas = accountMetas.reduce([Account.Meta]()) { result, accountMeta in

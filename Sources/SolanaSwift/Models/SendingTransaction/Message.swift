@@ -25,7 +25,7 @@ public extension Transaction {
             self.instructions = instructions
         }
 
-        func serialize() throws -> Data {
+        public func serialize() throws -> Data {
             // Header
             let header = encodeHeader()
 
