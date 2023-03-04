@@ -32,7 +32,6 @@ let package = Package(
         .target(
             name: "SolanaSwift",
             dependencies: [
-                "secp256k1",
                 "TweetNacl",
                 "Task_retrying"
             ]
